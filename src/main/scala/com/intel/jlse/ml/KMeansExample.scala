@@ -7,11 +7,7 @@ import org.apache.spark.sql.SparkSession
 import java.net.URI
 
 /**
- * An example demonstrating k-means clustering.
- * Run with
- * {{{
- * bin/run-example ml.KMeansExample
- * }}}
+
  */
 object KMeansExample {
   val defaultUri = "daos:///jlse/kmeans/kmeans.csv"
@@ -35,7 +31,16 @@ object KMeansExample {
     // $example on$
     try {
       val uriStr = if (args.length < 1) new URI(defaultUri).toString else new URI(args(0)).toString
-      val format = if (args.length < 2) defaultFormat else args(1)
+      val format = if (args.length < 2) {
+        val idx = uriStr.lastIndexOf('.')
+        if (idx >= 0 && idx < uriStr.length - 1) {
+          uriStr.substring(idx + 1)
+        } else {
+          defaultFormat
+        }
+      } else {
+        args(1)
+      }
       val dataset = format match {
         case "csv" => spark.read.csv(uriStr)
         case "json" => spark.read.json(uriStr)
@@ -71,7 +76,7 @@ object KMeansExample {
       model.clusterCenters.foreach(println)
       // $example off$
     } catch {
-      case e: _ => throw new Exception(helpMsg, e);
+      case e: Throwable => throw new Exception(helpMsg, e);
     } finally {
       spark.stop()
     }
