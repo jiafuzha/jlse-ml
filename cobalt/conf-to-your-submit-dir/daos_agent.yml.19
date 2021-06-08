@@ -1,0 +1,2 @@
+name: daos_server
+access_points: ['daos19:10001']
