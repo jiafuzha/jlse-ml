@@ -52,6 +52,7 @@ object KMeansExample {
       } else {
         args(1)
       }
+
       var dataset = format match {
         case "csv" => spark.read.option("header", true).csv(uriStr)
         case "json" => spark.read.json(uriStr)
@@ -83,7 +84,8 @@ object KMeansExample {
       val predictions = model.transform(dataset)
 
       // Evaluate clustering by computing Silhouette score
-      val evaluator = new ClusteringEvaluator().setDistanceMeasure(kmeans.getDistanceMeasure)
+      val evaluator = new ClusteringEvaluator().setDistanceMeasure(
+        if (kmeans.getDistanceMeasure != "cosine") "squaredEuclidean" else "cosine")
 
       val silhouette = evaluator.evaluate(predictions)
       println(s"Silhouette with ${kmeans.getDistanceMeasure} = $silhouette")
