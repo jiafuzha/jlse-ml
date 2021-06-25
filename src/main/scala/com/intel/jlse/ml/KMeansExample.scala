@@ -65,6 +65,7 @@ object KMeansExample {
 
       val assembler = new VectorAssembler().setInputCols(Array("iCitizen","iClass","dIncome1")).setOutputCol("features")
                                            .setHandleInvalid("skip")
+
       dataset = assembler.transform(dataset)
       dataset = dataset.drop(columnsToDrop: _*)
 
